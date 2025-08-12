@@ -2,6 +2,7 @@
 using Core.Interfaces;
 using Infrastructure.Repositories;
 using ManagementApi.DTOs;
+using ManagementApi.DTOs.Mappings;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ManagementApi.Controllers
@@ -25,20 +26,22 @@ namespace ManagementApi.Controllers
             if (movies is null)
                 return NotFound();
 
-            var moviesDto = new List<MovieDTO>();
+            //var moviesDto = new List<MovieDTO>();
 
-            foreach (var movie in movies)
-            {
-                var movieDto = new MovieDTO
-                {
-                    Id = movie.Id,
-                    IsDeleted = movie.IsDeleted,
-                    Title = movie.Title,
-                    Year = movie.Year,
-                    Director = movie.Director,
-                };
-                moviesDto.Add(movieDto);
-            }
+            //foreach (var movie in movies)
+            //{
+            //    var movieDto = new MovieDTO
+            //    {
+            //        Id = movie.Id,
+            //        IsDeleted = movie.IsDeleted,
+            //        Title = movie.Title,
+            //        Year = movie.Year,
+            //        Director = movie.Director,
+            //    };
+            //    moviesDto.Add(movieDto);
+            //}
+
+            var moviesDto = movies.ToMovieDTOList();
 
             return Ok(moviesDto);
         }
@@ -54,14 +57,16 @@ namespace ManagementApi.Controllers
                 return NotFound();
             }
 
-            var movieDto = new MovieDTO()
-            {
-                Id = movie.Id,
-                IsDeleted = movie.IsDeleted,
-                Title = movie.Title,
-                Year = movie.Year,
-                Director = movie.Director,
-            };
+            //var movieDto = new MovieDTO()
+            //{
+            //    Id = movie.Id,
+            //    IsDeleted = movie.IsDeleted,
+            //    Title = movie.Title,
+            //    Year = movie.Year,
+            //    Director = movie.Director,
+            //};
+
+            var movieDto = movie.ToMovieDTO();
 
             return Ok(movieDto);
         }
@@ -74,20 +79,22 @@ namespace ManagementApi.Controllers
             if (deletedMovies is null)
                 return NotFound();
 
-            var deletedMoviesDto = new List<MovieDTO>();
+            //var deletedMoviesDto = new List<MovieDTO>();
 
-            foreach (var deletedMovie in deletedMovies)
-            {
-                var deletedMovieDto = new MovieDTO
-                {
-                    Id = deletedMovie.Id,
-                    IsDeleted = deletedMovie.IsDeleted,
-                    Title = deletedMovie.Title,
-                    Year = deletedMovie.Year,
-                    Director = deletedMovie.Director,
-                };
-                deletedMoviesDto.Add(deletedMovieDto);
-            }
+            //foreach (var deletedMovie in deletedMovies)
+            //{
+            //    var deletedMovieDto = new MovieDTO
+            //    {
+            //        Id = deletedMovie.Id,
+            //        IsDeleted = deletedMovie.IsDeleted,
+            //        Title = deletedMovie.Title,
+            //        Year = deletedMovie.Year,
+            //        Director = deletedMovie.Director,
+            //    };
+            //    deletedMoviesDto.Add(deletedMovieDto);
+            //}
+
+            var deletedMoviesDto = deletedMovies.ToMovieDTOList();
 
             return Ok(deletedMoviesDto);
         }
@@ -98,26 +105,30 @@ namespace ManagementApi.Controllers
             if (movieDto is null)
                 return BadRequest();
 
-            var movie = new Movie()
-            {
-                Id = movieDto.Id,
-                IsDeleted = movieDto.IsDeleted,
-                Title = movieDto.Title,
-                Year = movieDto.Year,
-                Director = movieDto.Director,
-            };
+            //var movie = new Movie()
+            //{
+            //    Id = movieDto.Id,
+            //    IsDeleted = movieDto.IsDeleted,
+            //    Title = movieDto.Title,
+            //    Year = movieDto.Year,
+            //    Director = movieDto.Director,
+            //};
+
+            var movie = movieDto.ToMovie();
 
             var createdMovie = _unitOfWork.MovieRepository.Create(movie);
             _unitOfWork.Commit();
 
-            var createdMovieDto = new MovieDTO()
-            {
-                Id = createdMovie.Id,
-                IsDeleted = createdMovie.IsDeleted,
-                Title = createdMovie.Title,
-                Year = createdMovie.Year,
-                Director = createdMovie.Director,
-            };
+            //var createdMovieDto = new MovieDTO()
+            //{
+            //    Id = createdMovie.Id,
+            //    IsDeleted = createdMovie.IsDeleted,
+            //    Title = createdMovie.Title,
+            //    Year = createdMovie.Year,
+            //    Director = createdMovie.Director,
+            //};
+
+            var createdMovieDto = createdMovie.ToMovieDTO();
 
             return Ok(createdMovieDto);
         }
@@ -128,26 +139,30 @@ namespace ManagementApi.Controllers
             if (id != movieDto.Id) 
                 return BadRequest("Invalid movie!"); // Status Code 400
 
-            var movie = new Movie()
-            {
-                Id = movieDto.Id,
-                IsDeleted = movieDto.IsDeleted,
-                Title = movieDto.Title,
-                Year = movieDto.Year,
-                Director = movieDto.Director,
-            };
+            //var movie = new Movie()
+            //{
+            //    Id = movieDto.Id,
+            //    IsDeleted = movieDto.IsDeleted,
+            //    Title = movieDto.Title,
+            //    Year = movieDto.Year,
+            //    Director = movieDto.Director,
+            //};
+
+            var movie = movieDto.ToMovie();
 
             var updatedMovie = _unitOfWork.MovieRepository.Update(movie);
             _unitOfWork.Commit();
 
-            var updatedMovieDto = new MovieDTO()
-            {
-                Id = updatedMovie.Id,
-                IsDeleted = updatedMovie.IsDeleted,
-                Title = updatedMovie.Title,
-                Year = updatedMovie.Year,
-                Director = updatedMovie.Director,
-            };
+            //var updatedMovieDto = new MovieDTO()
+            //{
+            //    Id = updatedMovie.Id,
+            //    IsDeleted = updatedMovie.IsDeleted,
+            //    Title = updatedMovie.Title,
+            //    Year = updatedMovie.Year,
+            //    Director = updatedMovie.Director,
+            //};
+
+            var updatedMovieDto = updatedMovie.ToMovieDTO();
 
             return Ok(updatedMovieDto);
 
@@ -166,14 +181,16 @@ namespace ManagementApi.Controllers
             var deletedMovie = _unitOfWork.MovieRepository.SoftDelete(id);
             _unitOfWork.Commit();
 
-            var deletedMovieDto = new MovieDTO()
-            {
-                Id = deletedMovie.Id,
-                IsDeleted = deletedMovie.IsDeleted,
-                Title = deletedMovie.Title,
-                Year = deletedMovie.Year,
-                Director = deletedMovie.Director,
-            };
+            //var deletedMovieDto = new MovieDTO()
+            //{
+            //    Id = deletedMovie.Id,
+            //    IsDeleted = deletedMovie.IsDeleted,
+            //    Title = deletedMovie.Title,
+            //    Year = deletedMovie.Year,
+            //    Director = deletedMovie.Director,
+            //};
+
+            var deletedMovieDto = deletedMovie.ToMovieDTO();
 
             return Ok(deletedMovieDto);
         }
