@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces;
 using Infrastructure.Repositories;
+using ManagementApi.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ManagementApi.Controllers
@@ -16,7 +17,7 @@ namespace ManagementApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Book>> GetBooks()
+        public ActionResult<IEnumerable<BookDTO>> GetBooks()
         {
             var books = _unitOfWork.BookRepository.GetAll().Where(x => x.IsDeleted == false);
 
@@ -24,7 +25,7 @@ namespace ManagementApi.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult<Book> GetBook(int id)
+        public ActionResult<BookDTO> GetBook(int id)
         {
             var book = _unitOfWork.BookRepository.Get(x => x.Id == id);
 
@@ -41,31 +42,31 @@ namespace ManagementApi.Controllers
         //}
 
         [HttpPost]
-        public ActionResult<Book> CreateBook(Book book)
+        public ActionResult<BookDTO> CreateBook(BookDTO bookDto)
         {
-            if (book is null)
+            if (bookDto is null)
                 return BadRequest("Invalid book!");
 
-            var newBook = _unitOfWork.BookRepository.Create(book);
+            var newBook = _unitOfWork.BookRepository.Create(bookDto);
             _unitOfWork.Commit();
 
             return Ok(newBook);
         }
 
         [HttpPut]
-        public ActionResult Put(int id, Book book)
+        public ActionResult<BookDTO> Put(int id, BookDTO bookDto)
         {
-            if (id != book.Id) 
+            if (id != bookDto.Id) 
                 return BadRequest("Invalid book!");// Status Code 400
 
-            var updatedBook = _unitOfWork.BookRepository.Update(book);
+            var updatedBook = _unitOfWork.BookRepository.Update(bookDto);
             _unitOfWork.Commit();
 
             return Ok(updatedBook);
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult<Book> SoftDeleteBook(int id)
+        public ActionResult<BookDTO> SoftDeleteBook(int id)
         {
             var book = _unitOfWork.BookRepository.Get(x => x.Id == id);
 
