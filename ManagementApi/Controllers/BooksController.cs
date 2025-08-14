@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using AutoMapper;
+using Core.Entities;
 using Core.Interfaces;
 using Infrastructure.Repositories;
 using ManagementApi.DTOs;
@@ -11,9 +12,11 @@ namespace ManagementApi.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public BooksController(IBookRepository repository, IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public BooksController(IBookRepository repository, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -21,7 +24,12 @@ namespace ManagementApi.Controllers
         {
             var books = _unitOfWork.BookRepository.GetAll().Where(x => x.IsDeleted == false);
 
-            return books is null ? NotFound() : Ok(books);
+            if (books is null)
+                return NotFound();
+
+            var produtosDto = _mapper.Map<IEnumerable<BookDTO>>(books);
+
+            return Ok(produtosDto);
         }
 
         [HttpGet("{id:int}")]
@@ -29,7 +37,12 @@ namespace ManagementApi.Controllers
         {
             var book = _unitOfWork.BookRepository.Get(x => x.Id == id);
 
-            return book is null ? NotFound("Book not found!") : Ok(book);
+            if (book is null)
+                return NotFound("Book not found!");
+
+            var bookDto = _mapper.Map<BookDTO>(book);
+
+            return Ok(bookDto);
         }
 
         // IMPLEMENTAR!!!!
@@ -47,10 +60,14 @@ namespace ManagementApi.Controllers
             if (bookDto is null)
                 return BadRequest("Invalid book!");
 
-            var newBook = _unitOfWork.BookRepository.Create(bookDto);
+            var book = _mapper.Map<Book>(bookDto);
+
+            var newBook = _unitOfWork.BookRepository.Create(book);
             _unitOfWork.Commit();
 
-            return Ok(newBook);
+            var newBookDto = _mapper.Map<BookDTO>(newBook);
+
+            return Ok(newBookDto);
         }
 
         [HttpPut]
@@ -59,10 +76,14 @@ namespace ManagementApi.Controllers
             if (id != bookDto.Id) 
                 return BadRequest("Invalid book!");// Status Code 400
 
-            var updatedBook = _unitOfWork.BookRepository.Update(bookDto);
+            var book = _mapper.Map<Book>(bookDto);
+
+            var updatedBook = _unitOfWork.BookRepository.Update(book);
             _unitOfWork.Commit();
 
-            return Ok(updatedBook);
+            var updatedBookDto = _mapper.Map<BookDTO>(updatedBook);
+
+            return Ok(updatedBookDto);
         }
 
         [HttpDelete("{id:int}")]
@@ -76,7 +97,9 @@ namespace ManagementApi.Controllers
             var deletedBook = _unitOfWork.BookRepository.SoftDelete(id);
             _unitOfWork.Commit();
 
-            return Ok(deletedBook);
+            var deletedBookDto = _mapper.Map<BookDTO>(deletedBook);
+
+            return Ok(deletedBookDto);
         }
     }
 }
